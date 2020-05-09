@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, create_engine, Integer, DateTime, Boolean
 from flask_sqlalchemy import SQLAlchemy
 import json
 
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import database_exists, create_database
 
 database_path = os.environ['DATABASE_URL']
@@ -34,14 +35,13 @@ class Hackathon(db.Model):
     place_name = Column(String)
 
     # many to many
-    categories = db.relationship("Hackathon_Category", cascade="all,delete", backref="category")
-    workshops = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
-    items = db.relationship("Hackathon_Item", cascade="all,delete", backref="item")
+    categories = relationship("Hackathon_Category", cascade="all,delete", backref="category")
+    workshops = relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
+    items = relationship("Hackathon_Item", cascade="all,delete", backref="item")
 
     # one to one
-    status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
-    status = db.relationship("Status", backref="hackathon")
-
+    status_id = Column(Integer, ForeignKey('status.id'))
+    status = relationship("Status", backref="hackathon")
 
     def short_serialize(self):
         """
@@ -52,8 +52,9 @@ class Hackathon(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'time': self.time,
-            'place': self.place
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+            'place_name': self.place_name
         }
 
     def full_serialize(self):
@@ -64,8 +65,9 @@ class Hackathon(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'time': self.time,
-            'place': self.place
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+            'place_name': self.place_name
             # TODO get childern's names
         }
 
@@ -99,7 +101,7 @@ class Workshop(db.Model):
     speaker_phone = Column(String)
 
     # many to many
-    hackathons = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="hackathon")
+    hackathons = relationship("Hackathon_Workshop", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
         return {
@@ -125,7 +127,7 @@ class Category(db.Model):
     description = Column(String)
 
     # many to many
-    hackathons = db.relationship("Hackathon_Category", cascade="all,delete", backref="hackathon")
+    hackathons = relationship("Hackathon_Category", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
         return {
@@ -150,7 +152,7 @@ class Item(db.Model):
     description = Column(String)
 
     # many to many
-    hackathons = db.relationship("Hackathon_Item", cascade="all,delete", backref="hackathon")
+    hackathons = relationship("Hackathon_Item", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
         return {
@@ -174,16 +176,16 @@ class Status(db.Model):
     name = Column(String)
     description = Column(String)
 
-    # one to one
-    # hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
-    # hackathon = db.relationship("Hackathon", back_populates="status")
-
     def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description
         }
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
 
     def __repr__(self):
         return json.dumps(self.serialize())
@@ -285,7 +287,7 @@ def setup_db(app, database_path=database_path):
     db.drop_all()
     db.create_all()
 
-    # # option 2 to create (depends on the machine)
+    # option 2 to create (depends on the machine)
     # engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
     # if not database_exists(engine.url):
     #     create_database(engine.url)
