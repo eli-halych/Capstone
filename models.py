@@ -9,6 +9,10 @@ database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
+"""
+    MAIN MODELS
+"""
+
 
 class Hackathon(db.Model):
     """
@@ -31,6 +35,7 @@ class Hackathon(db.Model):
 
     categories = db.relationship("Hackathon_Category", cascade="all,delete", backref="category")
     workshops = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
+
     # TODO items = # fk
     # TODO status = # fk
 
@@ -175,6 +180,11 @@ class Status(db.Model):
         return json.dumps(self.serialize())
 
 
+"""
+    ASSOCIATIVE MODELS
+"""
+
+
 class Hackathon_Workshop(db.Model):
     """
         Serves as a connection (assignation) between a workshop and a hackathon.
@@ -219,6 +229,11 @@ class Hackathon_Category(db.Model):
 
     def __repr__(self):
         return json.dumps(self.serialize())
+
+
+"""
+    EXECUTABLE SETUP FUNCTIONS
+"""
 
 
 def setup_db(app, database_path=database_path):
