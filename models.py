@@ -92,10 +92,6 @@ class Workshop(db.Model):
     hackathons = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
-        """
-            serialize()
-                representation of the Workshop model
-        """
         return {
             'id': self.id,
             'name': self.name,
@@ -121,10 +117,6 @@ class Category(db.Model):
     # TODO hackathons = # fk
 
     def serialize(self):
-        """
-            serialize()
-                representation of the Category model
-        """
         return {
             'id': self.id,
             'name': self.name,
@@ -149,10 +141,6 @@ class Item(db.Model):
     # TODO hackathons = # fk with flags have/need
 
     def serialize(self):
-        """
-            serialize()
-                representation of the Item model
-        """
         return {
             'id': self.id,
             'name': self.name,
@@ -177,10 +165,6 @@ class Status(db.Model):
     # TODO hackathon = # fk
 
     def serialize(self):
-        """
-            serialize()
-                representation of the Status model
-        """
         return {
             'id': self.id,
             'name': self.name,
@@ -192,6 +176,10 @@ class Status(db.Model):
 
 
 class Hackathon_Workshop(db.Model):
+    """
+        Serves as a connection (assignation) between a workshop and a hackathon.
+    """
+
     __tablename__ = 'hackathon_workshop'
 
     id = db.Column(Integer, primary_key=True)
@@ -199,20 +187,16 @@ class Hackathon_Workshop(db.Model):
     workshop_id = Column(Integer, ForeignKey('workshop.id'))
     event_description = Column(String)
 
-    def __repr__(self):
-        return f'<Show {self.id}>'
-
     def serialize(self):
-        """
-            serialize()
-                representation of the Hackathon_Workshop relationship model
-        """
         return {
             'id': self.id,
             'hackathon_id': self.hackathon_id,
             'workshop_id': self.workshop_id,
             "event_description": self.event_description
         }
+
+    def __repr__(self):
+        return json.dumps(self.serialize())
 
 
 def setup_db(app, database_path=database_path):
