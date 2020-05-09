@@ -33,11 +33,13 @@ class Hackathon(db.Model):
     end_time = db.Column(DateTime(timezone=True))
     place_name = Column(String)
 
+    # many to many
     categories = db.relationship("Hackathon_Category", cascade="all,delete", backref="category")
     workshops = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
     items = db.relationship("Hackathon_Item", cascade="all,delete", backref="item")
 
-    # TODO status = # fk
+    # one to one
+    child = db.relationship("Status", uselist=False, back_populates="hackathon")
 
     def short_serialize(self):
         """
@@ -94,6 +96,7 @@ class Workshop(db.Model):
     duration = Column(String)
     speaker_phone = Column(String)
 
+    # many to many
     hackathons = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
@@ -119,6 +122,7 @@ class Category(db.Model):
     name = Column(String)
     description = Column(String)
 
+    # many to many
     hackathons = db.relationship("Hackathon_Category", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
@@ -143,6 +147,7 @@ class Item(db.Model):
     name = Column(String)
     description = Column(String)
 
+    # many to many
     hackathons = db.relationship("Hackathon_Item", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
@@ -167,7 +172,9 @@ class Status(db.Model):
     name = Column(String)
     description = Column(String)
 
-    # TODO hackathon = # fk
+    # one to one
+    hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
+    hackathon = db.relationship("Hackathon", back_populates="status")
 
     def serialize(self):
         return {
