@@ -35,8 +35,8 @@ class Hackathon(db.Model):
 
     categories = db.relationship("Hackathon_Category", cascade="all,delete", backref="category")
     workshops = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
+    items = db.relationship("Hackathon_Item", cascade="all,delete", backref="item")
 
-    # TODO items = # fk
     # TODO status = # fk
 
     def short_serialize(self):
@@ -143,7 +143,7 @@ class Item(db.Model):
     name = Column(String)
     description = Column(String)
 
-    # TODO hackathons = # fk with flags have/need
+    hackathons = db.relationship("Hackathon_Item", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
         return {
@@ -225,6 +225,30 @@ class Hackathon_Category(db.Model):
             'id': self.id,
             'hackathon_id': self.hackathon_id,
             'category_id': self.category_id,
+        }
+
+    def __repr__(self):
+        return json.dumps(self.serialize())
+
+
+class Hackathon_Item(db.Model):
+    """
+        Serves as a connection (assignation) between an item and a hackathon.
+    """
+
+    __tablename__ = 'hackathon_item'
+
+    id = db.Column(Integer, primary_key=True)
+    hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
+    item_id = Column(Integer, ForeignKey('item.id'))
+    available = Column(Boolean)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'hackathon_id': self.hackathon_id,
+            'item_id': self.item_id,
+            'available': self.available
         }
 
     def __repr__(self):
