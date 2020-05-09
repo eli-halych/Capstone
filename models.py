@@ -39,7 +39,9 @@ class Hackathon(db.Model):
     items = db.relationship("Hackathon_Item", cascade="all,delete", backref="item")
 
     # one to one
-    child = db.relationship("Status", uselist=False, back_populates="hackathon")
+    status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
+    status = db.relationship("Status", backref="hackathon")
+
 
     def short_serialize(self):
         """
@@ -63,7 +65,7 @@ class Hackathon(db.Model):
             'id': self.id,
             'name': self.name,
             'time': self.time,
-            'place': self.place,
+            'place': self.place
             # TODO get childern's names
         }
 
@@ -173,8 +175,8 @@ class Status(db.Model):
     description = Column(String)
 
     # one to one
-    hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
-    hackathon = db.relationship("Hackathon", back_populates="status")
+    # hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
+    # hackathon = db.relationship("Hackathon", back_populates="status")
 
     def serialize(self):
         return {
