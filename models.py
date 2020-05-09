@@ -1,8 +1,9 @@
 import os
-from sqlalchemy import Column, String, create_engine, Integer, DateTime, Boolean
+from sqlalchemy import Column, String, create_engine, Integer, DateTime, Boolean, ForeignKey
 from flask_sqlalchemy import SQLAlchemy
 import json
-# from sqlalchemy_utils import database_exists, create_database
+
+from sqlalchemy_utils import database_exists, create_database
 
 database_path = os.environ['DATABASE_URL']
 
@@ -14,13 +15,13 @@ class Hackathon(db.Model):
         Main event model connecting workshops, assets, can be approved or rejected by a Developer Students Club's lead
         after being reviewed as an application made by a Developer Students' Club member.
 
-        MANY Hackathon can host MANY Workshop
-        MANY Hackathon can have MANY Category
-        MANY Hackathon can have MANY Item
+        MANY Hackathon can host MANY Workshop -> associative table Hackathon_Workshop
+        MANY Hackathon can have MANY Category -> associative table Hackathon_Category
+        MANY Hackathon can have MANY Item -> associative table Hackathon_Item
         ONE Hackathon can have ONE Status
     """
 
-    __tablename__ = 'hackathons'
+    __tablename__ = 'hackathon'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -29,7 +30,7 @@ class Hackathon(db.Model):
     place_name = Column(String)
 
     # TODO categories = # fk
-    # TODO workshops = # fk
+    workshop = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
     # TODO items = # fk
     # TODO status = # fk
 
@@ -79,7 +80,7 @@ class Workshop(db.Model):
         Workshop events run within a hackathon (many to many relationship)
     """
 
-    __tablename__ = 'workshops'
+    __tablename__ = 'workshop'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -88,7 +89,7 @@ class Workshop(db.Model):
     duration = Column(String)
     speaker_phone = Column(String)
 
-    # TODO hackathons = # fk with event description
+    hackathons = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
         """
@@ -111,7 +112,7 @@ class Category(db.Model):
         Categories a hackathon belongs to (many to many relationship)
     """
 
-    __tablename__ = 'categories'
+    __tablename__ = 'categorie'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -139,7 +140,7 @@ class Item(db.Model):
         Needed or available assets for a hackathon (many to many relationship)
     """
 
-    __tablename__ = 'items'
+    __tablename__ = 'item'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -167,7 +168,7 @@ class Status(db.Model):
         3 types of hackathon statuses: approved, rejected, pending (one to one relationship)
     """
 
-    __tablename__ = 'statuses'
+    __tablename__ = 'status'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -188,6 +189,30 @@ class Status(db.Model):
 
     def __repr__(self):
         return json.dumps(self.serialize())
+
+
+class Hackathon_Workshop(db.Model):
+    __tablename__ = 'hackathon_workshop'
+
+    id = db.Column(Integer, primary_key=True)
+    hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
+    workshop_id = Column(Integer, ForeignKey('workshop.id'))
+    event_description = Column(String)
+
+    def __repr__(self):
+        return f'<Show {self.id}>'
+
+    def serialize(self):
+        """
+            serialize()
+                representation of the Hackathon_Workshop relationship model
+        """
+        return {
+            'id': self.id,
+            'hackathon_id': self.hackathon_id,
+            'workshop_id': self.workshop_id,
+            "event_description": self.event_description
+        }
 
 
 def setup_db(app, database_path=database_path):
