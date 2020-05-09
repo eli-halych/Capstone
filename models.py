@@ -29,8 +29,8 @@ class Hackathon(db.Model):
     end_time = db.Column(DateTime(timezone=True))
     place_name = Column(String)
 
-    # TODO categories = # fk
-    workshop = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
+    categories = db.relationship("Hackathon_Category", cascade="all,delete", backref="category")
+    workshops = db.relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
     # TODO items = # fk
     # TODO status = # fk
 
@@ -108,13 +108,13 @@ class Category(db.Model):
         Categories a hackathon belongs to (many to many relationship)
     """
 
-    __tablename__ = 'categorie'
+    __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)
 
-    # TODO hackathons = # fk
+    hackathons = db.relationship("Hackathon_Category", cascade="all,delete", backref="hackathon")
 
     def serialize(self):
         return {
@@ -193,6 +193,28 @@ class Hackathon_Workshop(db.Model):
             'hackathon_id': self.hackathon_id,
             'workshop_id': self.workshop_id,
             "event_description": self.event_description
+        }
+
+    def __repr__(self):
+        return json.dumps(self.serialize())
+
+
+class Hackathon_Category(db.Model):
+    """
+        Serves as a connection (assignation) between a category and a hackathon.
+    """
+
+    __tablename__ = 'hackathon_category'
+
+    id = db.Column(Integer, primary_key=True)
+    hackathon_id = Column(Integer, ForeignKey('hackathon.id'))
+    category_id = Column(Integer, ForeignKey('category.id'))
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'hackathon_id': self.hackathon_id,
+            'category_id': self.category_id,
         }
 
     def __repr__(self):
