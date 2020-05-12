@@ -8,7 +8,7 @@ hackathon_api = Blueprint('hackathon_api', __name__)
 @hackathon_api.route('/hackathons', methods=['GET'])
 def get_hackathons():
     """
-        GET /drinks
+        GET /hackathons
             it is accessible for authorized DSC members
             it contains only the short data representation
 
@@ -35,7 +35,7 @@ def get_hackathons():
 @hackathon_api.route('/hackathons', methods=['POST'])
 def create_hackathon():
     """
-        POST /drinks
+        POST /hackathons
             it is accessible for authorized DSC members
             it takes up to a full representation of a hackathon
 
@@ -45,7 +45,7 @@ def create_hackathon():
 
     data = {}
     response = {
-        'hackathon_id': [],
+        'hackathon_id': None,
         'success': False
     }
 
@@ -67,6 +67,44 @@ def create_hackathon():
 
         response['success'] = True
         response['hackathon_id'] = hackathon.id
+    except:
+        abort(422)  # unprocessable
+
+    return jsonify(response)
+
+
+@hackathon_api.route('/hackathons/<hackathon_id>', methods=['GET'])
+def get_one_hackathon(hackathon_id):
+    """
+        GET /hackathons
+            it is accessible for authorized DSC members
+            it contains a full representation of a hackathon
+
+        :return: status code 200 and full descriptions of a requested hackathon, success status and
+        requested hackathon id
+        {'hackathon': {...}, 'success': True, 'hackathon_id': 1}
+    """
+
+    data = {}
+    response = {
+        'hackathon': {},
+        'success': False,
+        'hackathon_id': None
+    }
+
+    if hackathon_id is None:
+        abort(400)  # bad request
+
+    try:
+
+        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+
+        if hackathon is None:
+            abort(404)  # not found
+
+        response['success'] = True
+        response['hackathon_id'] = hackathon.id
+        response['hackathon'] = hackathon.full_serialize()
     except:
         abort(422)  # unprocessable
 
