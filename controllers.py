@@ -85,7 +85,6 @@ def get_one_hackathon(hackathon_id):
         {'hackathon': {...}, 'success': True, 'hackathon_id': 1}
     """
 
-    data = {}
     response = {
         'hackathon': {},
         'success': False,
@@ -121,7 +120,6 @@ def delete_hackathon(hackathon_id):
         {'success': True, 'hackathon_id': 1}
     """
 
-    data = {}
     response = {
         'success': False,
         'hackathon_id': None
@@ -141,6 +139,53 @@ def delete_hackathon(hackathon_id):
 
         response['success'] = True
         response['hackathon_id'] = hackathon.id
+    except:
+        abort(422)  # unprocessable
+
+    return jsonify(response)
+
+
+@hackathon_api.route('/hackathons/<hackathon_id>', methods=['PATCH'])
+def approve_hackathon(hackathon_id):
+    """
+        PATCH /hackathons/<hackathon_id>
+            changes hackathon's status
+
+        :return: status code 200, success status and hackathon's ID,  the new status and updated hackathon
+        {'success': True, 'hackathon_id': 1, 'status': 'Approved, 'hackathon': {...}}
+    """
+
+    data = {}
+    response = {
+        'success': False,
+        'hackathon_id': None,
+        'status': None,
+        'hackathon': {}
+    }
+
+    if hackathon_id is None:
+        abort(400)  # bad request
+
+    try:
+        data = json.loads(request.data)
+    except:
+        abort(400)  # bad request
+
+    try:
+        status = Status.query.filter(Status.id == data['status_id']).first()
+        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+
+        if hackathon is None:
+            abort(404)  # not found
+
+        hackathon.status = status
+
+        hackathon.update()
+
+        response['success'] = True
+        response['hackathon_id'] = hackathon.id
+        response['status'] = status.name
+        response['hackathon'] = hackathon.full_serialize()
     except:
         abort(422)  # unprocessable
 

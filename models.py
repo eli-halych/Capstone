@@ -66,7 +66,8 @@ class Hackathon(db.Model):
             'name': self.name,
             'start_time': self.start_time,
             'end_time': self.end_time,
-            'place_name': self.place_name
+            'place_name': self.place_name,
+            'status_id': self.status.id
             # TODO get childern's names
         }
 

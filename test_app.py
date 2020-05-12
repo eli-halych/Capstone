@@ -11,6 +11,7 @@ from models import setup_db, Status, Hackathon
 
 database_path = os.environ['DATABASE_URL']
 
+
 class DSCTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
@@ -33,10 +34,20 @@ class DSCTestCase(unittest.TestCase):
                 create_database(engine.url)
 
             # test status
-            self.status_pending = Status(
+            status_pending = Status(
                 name="Pending",
                 description="Submitted application"
             )
+            status_approved = Status(
+                name="Approved",
+                description="Hackathon approved"
+            )
+
+            status_pending.insert()
+            status_approved.insert()
+
+            self.status_pending_id = status_pending.id
+            self.status_approved_id = status_approved.id
 
     def tearDown(self):
         """Executed after reach test"""
@@ -60,7 +71,7 @@ class DSCTestCase(unittest.TestCase):
             "start_time": "2001-01-11T00:00:00",
             "end_time": "2001-01-21T00:00:00",
             "place_name": "Google Campus",
-            "status_id": self.status_pending.id
+            "status_id": self.status_pending_id
         }
         request_body = json.dumps(request_body)
 
@@ -83,7 +94,7 @@ class DSCTestCase(unittest.TestCase):
             "start_time": "2001-01-11T00:00:00",
             "end_time": "2001-01-21T00:00:00",
             "place_name": "Google Campus",
-            "status_id": self.status_pending.id
+            "status_id": self.status_pending_id
         }
         hackathon = Hackathon(
             name=data['name'],
@@ -115,7 +126,7 @@ class DSCTestCase(unittest.TestCase):
             "start_time": "2001-01-11T00:00:00",
             "end_time": "2001-01-21T00:00:00",
             "place_name": "Google Campus",
-            "status_id": self.status_pending.id
+            "status_id": self.status_pending_id
         }
         hackathon = Hackathon(
             name=data['name'],
@@ -136,6 +147,47 @@ class DSCTestCase(unittest.TestCase):
 
         self.assertEqual(status_code, 200)
         self.assertTrue(success)
+        self.assertEqual(data['hackathon_id'], requested_id)
+
+    def test_partially_update_hackathons(self):
+        # checks an existing hackathon and valid data
+        hackathon_data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        request_data = {
+            'status': "Approved",
+            'status_id': self.status_approved_id
+        }
+        request_data_json = json.dumps(request_data)
+
+        hackathon = Hackathon(
+            name=hackathon_data['name'],
+            start_time=hackathon_data['start_time'],
+            end_time=hackathon_data['end_time'],
+            place_name=hackathon_data['place_name'],
+            status_id=hackathon_data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
+
+        res = self.client().patch(
+            f'/hackathons/{requested_id}',
+            data=request_data_json
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+
+        success = data['success']
+
+        hackathon.delete()
+
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(data['hackathon']['status_id'], request_data['status_id'])
         self.assertEqual(data['hackathon_id'], requested_id)
 
 
