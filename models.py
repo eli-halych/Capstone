@@ -1,10 +1,9 @@
-import os
-from sqlalchemy import Column, String, create_engine, Integer, DateTime, Boolean, ForeignKey
-from flask_sqlalchemy import SQLAlchemy
 import json
+import os
 
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, String, Integer, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy_utils import database_exists, create_database
 
 database_path = os.environ['DATABASE_URL']
 
@@ -286,8 +285,3 @@ def setup_db(app, database_path=database_path):
     # option one to create
     db.drop_all()
     db.create_all()
-
-    # option 2 to create (depends on the machine)
-    # engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-    # if not database_exists(engine.url):
-    #     create_database(engine.url)
