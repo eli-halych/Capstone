@@ -76,7 +76,7 @@ def create_hackathon():
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['GET'])
 def get_one_hackathon(hackathon_id):
     """
-        GET /hackathons
+        GET /hackathons/<hackathon_id>
             it is accessible for authorized DSC members
             it contains a full representation of a hackathon
 
@@ -105,6 +105,42 @@ def get_one_hackathon(hackathon_id):
         response['success'] = True
         response['hackathon_id'] = hackathon.id
         response['hackathon'] = hackathon.full_serialize()
+    except:
+        abort(422)  # unprocessable
+
+    return jsonify(response)
+
+
+@hackathon_api.route('/hackathons/<hackathon_id>', methods=['DELETE'])
+def delete_hackathon(hackathon_id):
+    """
+        DELETE /hackathons/<hackathon_id>
+            removes requested hackathon frm the database
+
+        :return: status code 200, success status and removed hackathon's id
+        {'success': True, 'hackathon_id': 1}
+    """
+
+    data = {}
+    response = {
+        'success': False,
+        'hackathon_id': None
+    }
+
+    if hackathon_id is None:
+        abort(400)  # bad request
+
+    try:
+
+        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+
+        if hackathon is None:
+            abort(404)  # not found
+
+        hackathon.delete()
+
+        response['success'] = True
+        response['hackathon_id'] = hackathon.id
     except:
         abort(422)  # unprocessable
 

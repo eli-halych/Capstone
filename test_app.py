@@ -108,6 +108,36 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(data['hackathon_id'], requested_id)
 
+    def test_delete_hackathons(self):
+        # checks an existing hackathon
+        data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending.id
+        }
+        hackathon = Hackathon(
+            name=data['name'],
+            start_time=data['start_time'],
+            end_time=data['end_time'],
+            place_name=data['place_name'],
+            status_id=data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
+
+        res = self.client().delete(
+            f'/hackathons/{requested_id}'
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(data['hackathon_id'], requested_id)
+
 
 if __name__ == "__main__":
     unittest.main()
