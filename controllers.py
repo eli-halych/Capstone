@@ -190,3 +190,53 @@ def approve_hackathon(hackathon_id):
         abort(422)  # unprocessable
 
     return jsonify(response)
+
+
+@hackathon_api.route('/hackathons/<hackathon_id>', methods=['PUT'])
+def edit_hackathon(hackathon_id):
+    """
+        PUT /hackathons/<hackathon_id>
+            updates all hackathon's details except those belonging to relationships
+            # TODO update relationships
+
+        :return: status code 200, success status, hackathon's ID and the updated hackathon
+        {'success': True, 'hackathon_id': 1, 'hackathon': {...}}
+    """
+
+    data = {}
+    response = {
+        'success': False,
+        'hackathon_id': None,
+        'hackathon': {}
+    }
+
+    if hackathon_id is None:
+        abort(404)  # not found
+
+    try:
+        data = json.loads(request.data)
+    except:
+        abort(400)  # bad request
+
+    try:
+        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+
+        hackathon.name = data['name']
+        hackathon.start_time = data['start_time']
+        hackathon.end_time = data['end_time']
+        hackathon.place_name = data['place_name']
+
+        hackathon.update()
+
+        if hackathon is None:
+            abort(404)  # not found
+
+        hackathon.update()
+
+        response['success'] = True
+        response['hackathon_id'] = hackathon.id
+        response['hackathon'] = hackathon.full_serialize()
+    except:
+        abort(422)  # unprocessable
+
+    return jsonify(response)

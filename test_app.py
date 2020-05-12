@@ -1,6 +1,7 @@
+import json
 import os
 import unittest
-import json
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
@@ -189,6 +190,49 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(data['hackathon']['status_id'], request_data['status_id'])
         self.assertEqual(data['hackathon_id'], requested_id)
+
+    def test_edit_hackathon(self):
+        # checks an existing hackathon and valid data
+        hackathon_data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=hackathon_data['name'],
+            start_time=hackathon_data['start_time'],
+            end_time=hackathon_data['end_time'],
+            place_name=hackathon_data['place_name'],
+            status_id=hackathon_data['status_id'],
+        )
+        hackathon.insert()
+        request_id = hackathon.id
+
+        request_data = {
+            "name": "Hackathon_Test_Changed",
+            "start_time": "2001-01-12T00:00:00",
+            "end_time": "2001-01-22T00:00:00",
+            "place_name": "Google Campus Changed",
+            "status_id": self.status_approved_id
+        }
+        request_data_json = json.dumps(request_data)
+
+        res = self.client().put(
+            f'/hackathons/{request_id}',
+            data=request_data_json
+        )
+
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+
+        received_hackathon = data['hackathon']
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(received_hackathon['name'], request_data['name'])
+        self.assertEqual(received_hackathon['place_name'], request_data['place_name'])
 
 
 if __name__ == "__main__":
