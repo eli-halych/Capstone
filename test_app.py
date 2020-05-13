@@ -18,8 +18,7 @@ class DSCTestCase(unittest.TestCase):
     """
         Contains 6 tests each one checking permissions for member/lead/public users.
         Requires a fresh JWT token for both users.
-        # TODO 1. refactor
-        # TODO 2. switch to pytest
+        # TODO switch to pytest
     """
 
     def setUp(self):
@@ -63,7 +62,7 @@ class DSCTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    def test_get_hackathons(self):
+    def test_get_hackathons_lead(self):
         # lead test
         res = self.client().get(
             '/hackathons',
@@ -76,6 +75,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(type(data['hackathons']), list)
 
+    def test_get_hackathons_member(self):
         # member test
         res = self.client().get(
             '/hackathons',
@@ -88,6 +88,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(type(data['hackathons']), list)
 
+    def test_get_hackathons_public(self):
         # public test
         res = self.client().get(
             '/hackathons'
@@ -98,7 +99,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 401)
         self.assertTrue(not success)
 
-    def test_create_hackathons(self):
+    def test_create_hackathons_lead(self):
         # lead test
         request_body = {
             "name": "Hackathon_Test",
@@ -120,6 +121,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(type(data['hackathon_id']), int)
 
+    def test_create_hackathons_member(self):
         # member test
         request_body = {
             "name": "Hackathon_Test",
@@ -141,6 +143,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(type(data['hackathon_id']), int)
 
+    def test_create_hackathons_public(self):
         # public test
         request_body = {
             "name": "Hackathon_Test",
@@ -160,7 +163,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 401)
         self.assertTrue(not success)
 
-    def test_create_one_hackathons(self):
+    def test_create_one_hackathons_lead(self):
         # lead test
         data = {
             "name": "Hackathon_Test",
@@ -190,6 +193,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(data['hackathon_id'], requested_id)
 
+    def test_create_one_hackathons_member(self):
         # member test
         data = {
             "name": "Hackathon_Test",
@@ -219,6 +223,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(data['hackathon_id'], requested_id)
 
+    def test_create_one_hackathons_public(self):
         # public test
         data = {
             "name": "Hackathon_Test",
@@ -246,7 +251,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 401)
         self.assertTrue(not success)
 
-    def test_delete_hackathons(self):
+    def test_delete_hackathons_lead(self):
         # lead test
         data = {
             "name": "Hackathon_Test",
@@ -275,6 +280,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(data['hackathon_id'], requested_id)
 
+    def test_delete_hackathons_member(self):
         # member test
         data = {
             "name": "Hackathon_Test",
@@ -302,7 +308,8 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 403)
         self.assertTrue(not success)
 
-        # member test
+    def test_delete_hackathons_public(self):
+        # public test
         data = {
             "name": "Hackathon_Test",
             "start_time": "2001-01-11T00:00:00",
@@ -328,7 +335,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 401)
         self.assertTrue(not success)
 
-    def test_partially_update_hackathons(self):
+    def test_partially_update_hackathons_lead(self):
         # lead test
         hackathon_data = {
             "name": "Hackathon_Test",
@@ -365,6 +372,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(data['hackathon']['status_id'], request_data['status_id'])
         self.assertEqual(data['hackathon_id'], requested_id)
 
+    def test_partially_update_hackathons_member(self):
         # member test
         hackathon_data = {
             "name": "Hackathon_Test",
@@ -399,6 +407,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 403)
         self.assertTrue(not success)
 
+    def test_partially_update_hackathons_public(self):
         # public test
         hackathon_data = {
             "name": "Hackathon_Test",
@@ -432,7 +441,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 401)
         self.assertTrue(not success)
 
-    def test_edit_hackathon(self):
+    def test_edit_hackathon_lead(self):
         # lead test
         hackathon_data = {
             "name": "Hackathon_Test",
@@ -472,6 +481,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(received_hackathon['name'], request_data['name'])
         self.assertEqual(received_hackathon['place_name'], request_data['place_name'])
 
+    def test_edit_hackathon_member(self):
         # member test
         hackathon_data = {
             "name": "Hackathon_Test",
@@ -508,6 +518,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 403)
         self.assertTrue(not success)
 
+    def test_edit_hackathon_public(self):
         # public test
         hackathon_data = {
             "name": "Hackathon_Test",
