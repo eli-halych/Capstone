@@ -1,11 +1,14 @@
 from flask import jsonify, Blueprint, request, json
 from werkzeug.exceptions import abort
+
+from auth import requires_auth
 from models import Hackathon, Item, Status, Category, Workshop
 
 hackathon_api = Blueprint('hackathon_api', __name__)
 
 
 @hackathon_api.route('/hackathons', methods=['GET'])
+@requires_auth('get:hackathons')
 def get_hackathons():
     """
         GET /hackathons
@@ -33,6 +36,7 @@ def get_hackathons():
 
 
 @hackathon_api.route('/hackathons', methods=['POST'])
+@requires_auth('post:hackathons')
 def create_hackathon():
     """
         POST /hackathons
@@ -74,6 +78,7 @@ def create_hackathon():
 
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['GET'])
+@requires_auth('get:hackathons')
 def get_one_hackathon(hackathon_id):
     """
         GET /hackathons/<hackathon_id>
@@ -111,6 +116,7 @@ def get_one_hackathon(hackathon_id):
 
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['DELETE'])
+@requires_auth('delete:hackathons')
 def delete_hackathon(hackathon_id):
     """
         DELETE /hackathons/<hackathon_id>
@@ -146,6 +152,7 @@ def delete_hackathon(hackathon_id):
 
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['PATCH'])
+@requires_auth('patch:hackathons')
 def approve_hackathon(hackathon_id):
     """
         PATCH /hackathons/<hackathon_id>
@@ -193,6 +200,7 @@ def approve_hackathon(hackathon_id):
 
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['PUT'])
+@requires_auth('put:hackathons')
 def edit_hackathon(hackathon_id):
     """
         PUT /hackathons/<hackathon_id>
