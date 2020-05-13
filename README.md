@@ -103,15 +103,14 @@ export JWT_SECRET=
 export DATABASE_IRL=
 ```
 
+## Documentaiton
+
+- #### Endpoints
 - #### Error handlers
 
 - ###### When are errors expected
-
-- #### Endpoints
-
 - ###### Endpoint description
 
 - #### Sending requests
-
 - #### Tests requests
 
