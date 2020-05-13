@@ -114,3 +114,4 @@ export DATABASE_IRL=
 - #### Sending requests
 - #### Tests requests
 
+- #### Database structure
