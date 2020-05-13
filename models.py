@@ -284,5 +284,5 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
 
     # option one to create
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
