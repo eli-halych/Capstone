@@ -9,7 +9,7 @@ hackathon_api = Blueprint('hackathon_api', __name__)
 
 @hackathon_api.route('/hackathons', methods=['GET'])
 @requires_auth('get:hackathons')
-def get_hackathons():
+def get_hackathons(payload):
     """
         GET /hackathons
             it is accessible for authorized DSC members
@@ -37,7 +37,7 @@ def get_hackathons():
 
 @hackathon_api.route('/hackathons', methods=['POST'])
 @requires_auth('post:hackathons')
-def create_hackathon():
+def create_hackathon(payload):
     """
         POST /hackathons
             it is accessible for authorized DSC members
@@ -79,7 +79,7 @@ def create_hackathon():
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['GET'])
 @requires_auth('get:hackathons')
-def get_one_hackathon(hackathon_id):
+def get_one_hackathon(payload, hackathon_id):
     """
         GET /hackathons/<hackathon_id>
             it is accessible for authorized DSC members
@@ -117,7 +117,7 @@ def get_one_hackathon(hackathon_id):
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['DELETE'])
 @requires_auth('delete:hackathons')
-def delete_hackathon(hackathon_id):
+def delete_hackathon(payload, hackathon_id):
     """
         DELETE /hackathons/<hackathon_id>
             removes requested hackathon frm the database
@@ -153,7 +153,7 @@ def delete_hackathon(hackathon_id):
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['PATCH'])
 @requires_auth('patch:hackathons')
-def approve_hackathon(hackathon_id):
+def approve_hackathon(payload, hackathon_id):
     """
         PATCH /hackathons/<hackathon_id>
             changes hackathon's status
@@ -201,7 +201,7 @@ def approve_hackathon(hackathon_id):
 
 @hackathon_api.route('/hackathons/<hackathon_id>', methods=['PUT'])
 @requires_auth('put:hackathons')
-def edit_hackathon(hackathon_id):
+def edit_hackathon(payload, hackathon_id):
     """
         PUT /hackathons/<hackathon_id>
             updates all hackathon's details except those belonging to relationships
