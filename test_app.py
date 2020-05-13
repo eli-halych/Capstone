@@ -15,7 +15,12 @@ database_path = os.environ['DATABASE_URL']
 
 
 class DSCTestCase(unittest.TestCase):
-    """This class represents the trivia test case"""
+    """
+        Contains 6 tests each one checking permissions for member/lead/public users.
+        Requires a fresh JWT token for both users.
+        # TODO 1. refactor
+        # TODO 2. switch to pytest
+    """
 
     def setUp(self):
         """Define test variables and initialize app."""
@@ -156,7 +161,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(not success)
 
     def test_create_one_hackathons(self):
-        # checks an existing hackathon
+        # lead test
         data = {
             "name": "Hackathon_Test",
             "start_time": "2001-01-11T00:00:00",
@@ -173,22 +178,76 @@ class DSCTestCase(unittest.TestCase):
         )
         hackathon.insert()
         requested_id = hackathon.id
+        res = self.client().get(
+            f'/hackathons/{requested_id}',
+            headers=self.lead_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        hackathon.delete()
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(data['hackathon_id'], requested_id)
 
+        # member test
+        data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=data['name'],
+            start_time=data['start_time'],
+            end_time=data['end_time'],
+            place_name=data['place_name'],
+            status_id=data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
+        res = self.client().get(
+            f'/hackathons/{requested_id}',
+            headers=self.member_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        hackathon.delete()
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(data['hackathon_id'], requested_id)
+
+        # public test
+        data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=data['name'],
+            start_time=data['start_time'],
+            end_time=data['end_time'],
+            place_name=data['place_name'],
+            status_id=data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
         res = self.client().get(
             f'/hackathons/{requested_id}'
         )
         status_code = res.status_code
         data = json.loads(res.data)
         success = data['success']
-
         hackathon.delete()
-
-        self.assertEqual(status_code, 200)
-        self.assertTrue(success)
-        self.assertEqual(data['hackathon_id'], requested_id)
+        self.assertEqual(status_code, 401)
+        self.assertTrue(not success)
 
     def test_delete_hackathons(self):
-        # checks an existing hackathon
+        # lead test
         data = {
             "name": "Hackathon_Test",
             "start_time": "2001-01-11T00:00:00",
@@ -205,20 +264,72 @@ class DSCTestCase(unittest.TestCase):
         )
         hackathon.insert()
         requested_id = hackathon.id
+        res = self.client().delete(
+            f'/hackathons/{requested_id}',
+            headers=self.lead_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(data['hackathon_id'], requested_id)
 
+        # member test
+        data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=data['name'],
+            start_time=data['start_time'],
+            end_time=data['end_time'],
+            place_name=data['place_name'],
+            status_id=data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
+        res = self.client().delete(
+            f'/hackathons/{requested_id}',
+            headers=self.member_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 403)
+        self.assertTrue(not success)
+
+        # member test
+        data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=data['name'],
+            start_time=data['start_time'],
+            end_time=data['end_time'],
+            place_name=data['place_name'],
+            status_id=data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
         res = self.client().delete(
             f'/hackathons/{requested_id}'
         )
         status_code = res.status_code
         data = json.loads(res.data)
         success = data['success']
-
-        self.assertEqual(status_code, 200)
-        self.assertTrue(success)
-        self.assertEqual(data['hackathon_id'], requested_id)
+        self.assertEqual(status_code, 401)
+        self.assertTrue(not success)
 
     def test_partially_update_hackathons(self):
-        # checks an existing hackathon and valid data
+        # lead test
         hackathon_data = {
             "name": "Hackathon_Test",
             "start_time": "2001-01-11T00:00:00",
@@ -231,7 +342,6 @@ class DSCTestCase(unittest.TestCase):
             'status_id': self.status_approved_id
         }
         request_data_json = json.dumps(request_data)
-
         hackathon = Hackathon(
             name=hackathon_data['name'],
             start_time=hackathon_data['start_time'],
@@ -241,25 +351,89 @@ class DSCTestCase(unittest.TestCase):
         )
         hackathon.insert()
         requested_id = hackathon.id
+        res = self.client().patch(
+            f'/hackathons/{requested_id}',
+            data=request_data_json,
+            headers=self.lead_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        hackathon.delete()
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(data['hackathon']['status_id'], request_data['status_id'])
+        self.assertEqual(data['hackathon_id'], requested_id)
 
+        # member test
+        hackathon_data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        request_data = {
+            'status': "Approved",
+            'status_id': self.status_approved_id
+        }
+        request_data_json = json.dumps(request_data)
+        hackathon = Hackathon(
+            name=hackathon_data['name'],
+            start_time=hackathon_data['start_time'],
+            end_time=hackathon_data['end_time'],
+            place_name=hackathon_data['place_name'],
+            status_id=hackathon_data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
+        res = self.client().patch(
+            f'/hackathons/{requested_id}',
+            data=request_data_json,
+            headers=self.member_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        hackathon.delete()
+        self.assertEqual(status_code, 403)
+        self.assertTrue(not success)
+
+        # public test
+        hackathon_data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        request_data = {
+            'status': "Approved",
+            'status_id': self.status_approved_id
+        }
+        request_data_json = json.dumps(request_data)
+        hackathon = Hackathon(
+            name=hackathon_data['name'],
+            start_time=hackathon_data['start_time'],
+            end_time=hackathon_data['end_time'],
+            place_name=hackathon_data['place_name'],
+            status_id=hackathon_data['status_id'],
+        )
+        hackathon.insert()
+        requested_id = hackathon.id
         res = self.client().patch(
             f'/hackathons/{requested_id}',
             data=request_data_json
         )
         status_code = res.status_code
         data = json.loads(res.data)
-
         success = data['success']
-
         hackathon.delete()
-
-        self.assertEqual(status_code, 200)
-        self.assertTrue(success)
-        self.assertEqual(data['hackathon']['status_id'], request_data['status_id'])
-        self.assertEqual(data['hackathon_id'], requested_id)
+        self.assertEqual(status_code, 401)
+        self.assertTrue(not success)
 
     def test_edit_hackathon(self):
-        # checks an existing hackathon and valid data
+        # lead test
         hackathon_data = {
             "name": "Hackathon_Test",
             "start_time": "2001-01-11T00:00:00",
@@ -276,7 +450,6 @@ class DSCTestCase(unittest.TestCase):
         )
         hackathon.insert()
         request_id = hackathon.id
-
         request_data = {
             "name": "Hackathon_Test_Changed",
             "start_time": "2001-01-12T00:00:00",
@@ -285,21 +458,90 @@ class DSCTestCase(unittest.TestCase):
             "status_id": self.status_approved_id
         }
         request_data_json = json.dumps(request_data)
-
         res = self.client().put(
             f'/hackathons/{request_id}',
-            data=request_data_json
+            data=request_data_json,
+            headers=self.lead_headers
         )
-
         status_code = res.status_code
         data = json.loads(res.data)
         success = data['success']
-
         received_hackathon = data['hackathon']
         self.assertEqual(status_code, 200)
         self.assertTrue(success)
         self.assertEqual(received_hackathon['name'], request_data['name'])
         self.assertEqual(received_hackathon['place_name'], request_data['place_name'])
+
+        # member test
+        hackathon_data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=hackathon_data['name'],
+            start_time=hackathon_data['start_time'],
+            end_time=hackathon_data['end_time'],
+            place_name=hackathon_data['place_name'],
+            status_id=hackathon_data['status_id'],
+        )
+        hackathon.insert()
+        request_id = hackathon.id
+        request_data = {
+            "name": "Hackathon_Test_Changed",
+            "start_time": "2001-01-12T00:00:00",
+            "end_time": "2001-01-22T00:00:00",
+            "place_name": "Google Campus Changed",
+            "status_id": self.status_approved_id
+        }
+        request_data_json = json.dumps(request_data)
+        res = self.client().put(
+            f'/hackathons/{request_id}',
+            data=request_data_json,
+            headers=self.member_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 403)
+        self.assertTrue(not success)
+
+        # public test
+        hackathon_data = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        hackathon = Hackathon(
+            name=hackathon_data['name'],
+            start_time=hackathon_data['start_time'],
+            end_time=hackathon_data['end_time'],
+            place_name=hackathon_data['place_name'],
+            status_id=hackathon_data['status_id'],
+        )
+        hackathon.insert()
+        request_id = hackathon.id
+        request_data = {
+            "name": "Hackathon_Test_Changed",
+            "start_time": "2001-01-12T00:00:00",
+            "end_time": "2001-01-22T00:00:00",
+            "place_name": "Google Campus Changed",
+            "status_id": self.status_approved_id
+        }
+        request_data_json = json.dumps(request_data)
+        res = self.client().put(
+            f'/hackathons/{request_id}',
+            data=request_data_json
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 401)
+        self.assertTrue(not success)
 
 
 if __name__ == "__main__":
