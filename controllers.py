@@ -240,3 +240,63 @@ def edit_hackathon(hackathon_id):
         abort(422)  # unprocessable
 
     return jsonify(response)
+
+
+@hackathon_api.errorhandler(422)
+def unprocessable(error):
+    """"
+        Unable to process an understood request
+    """
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": str(error)
+    }), 422
+
+
+@hackathon_api.errorhandler(404)
+def not_found(error):
+    """"
+        Requested element not found
+    """
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": str(error)
+    }), 404
+
+
+@hackathon_api.errorhandler(400)
+def bad_request(error):
+    """"
+        Bad request.
+    """
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": str(error)
+    }), 400
+
+
+@hackathon_api.errorhandler(401)
+def not_authorized(error):
+    """"
+        Authorized access.
+    """
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": str(error)
+    }), 401
+
+
+@hackathon_api.errorhandler(403)
+def forbidden(error):
+    """"
+        Forbidden actions.
+    """
+    return jsonify({
+        "success": False,
+        "error": 403,
+        "message": str(error)
+    }), 403
