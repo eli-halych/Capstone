@@ -94,6 +94,7 @@ class DSCTestCase(unittest.TestCase):
         self.assertTrue(not success)
 
     def test_create_hackathons(self):
+        # lead test
         request_body = {
             "name": "Hackathon_Test",
             "start_time": "2001-01-11T00:00:00",
@@ -102,7 +103,48 @@ class DSCTestCase(unittest.TestCase):
             "status_id": self.status_pending_id
         }
         request_body = json.dumps(request_body)
+        res = self.client().post(
+            '/hackathons',
+            data=request_body,
+            headers=self.lead_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(type(data['hackathon_id']), int)
 
+        # member test
+        request_body = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        request_body = json.dumps(request_body)
+        res = self.client().post(
+            '/hackathons',
+            data=request_body,
+            headers=self.member_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(type(data['hackathon_id']), int)
+
+        # public test
+        request_body = {
+            "name": "Hackathon_Test",
+            "start_time": "2001-01-11T00:00:00",
+            "end_time": "2001-01-21T00:00:00",
+            "place_name": "Google Campus",
+            "status_id": self.status_pending_id
+        }
+        request_body = json.dumps(request_body)
         res = self.client().post(
             '/hackathons',
             data=request_body
@@ -110,10 +152,8 @@ class DSCTestCase(unittest.TestCase):
         status_code = res.status_code
         data = json.loads(res.data)
         success = data['success']
-
-        self.assertEqual(status_code, 200)
-        self.assertTrue(success)
-        self.assertEqual(type(data['hackathon_id']), int)
+        self.assertEqual(status_code, 401)
+        self.assertTrue(not success)
 
     def test_create_one_hackathons(self):
         # checks an existing hackathon
