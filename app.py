@@ -1,10 +1,16 @@
-import os
-from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, redirect
 from flask_cors import CORS
 
 from controllers import hackathon_api
 from models import setup_db
+from utils import get_auth0_variables
+
+config_vars = get_auth0_variables()
+AUTH0_DOMAIN = config_vars['auth0_domain']
+ALGORITHMS = config_vars['algorithms']
+API_AUDIENCE = config_vars['api_audience']
+CLIENT_ID = config_vars['client_id']
+REDIRECT_URL = config_vars['redirect_url']
 
 
 def create_app():
@@ -15,11 +21,15 @@ def create_app():
 
     app.register_blueprint(hackathon_api)
 
+    @app.route('/')
+    def login():
+        url = f"https://{AUTH0_DOMAIN}/authorize?audience={API_AUDIENCE}&response_type=token&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URL}"
+        return redirect(url, code=200)
+
     return app
 
 
 app = create_app()
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
