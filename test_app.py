@@ -9,6 +9,7 @@ from sqlalchemy_utils import database_exists, create_database
 from app import create_app
 from controllers import hackathon_api
 from models import setup_db, Status, Hackathon
+from utils import get_lead_token, get_member_token
 
 database_path = os.environ['DATABASE_URL']
 
@@ -50,21 +51,47 @@ class DSCTestCase(unittest.TestCase):
             self.status_pending_id = status_pending.id
             self.status_approved_id = status_approved.id
 
+            self.lead_headers = {"Authorization": f"Bearer {get_lead_token()}"}
+            self.member_headers = {"Authorization": f"Bearer {get_member_token()}"}
+
     def tearDown(self):
         """Executed after reach test"""
         pass
 
     def test_get_hackathons(self):
+        # lead test
+        res = self.client().get(
+            '/hackathons',
+            headers=self.lead_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(type(data['hackathons']), list)
+
+        # member test
+        res = self.client().get(
+            '/hackathons',
+            headers=self.member_headers
+        )
+        status_code = res.status_code
+        data = json.loads(res.data)
+        success = data['success']
+        self.assertEqual(status_code, 200)
+        self.assertTrue(success)
+        self.assertEqual(type(data['hackathons']), list)
+
+        # public test
         res = self.client().get(
             '/hackathons'
         )
         status_code = res.status_code
         data = json.loads(res.data)
         success = data['success']
-
-        self.assertEqual(status_code, 200)
-        self.assertTrue(success)
-        self.assertEqual(type(data['hackathons']), list)
+        self.assertEqual(status_code, 401)
+        self.assertTrue(not success)
 
     def test_create_hackathons(self):
         request_body = {
