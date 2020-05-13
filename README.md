@@ -12,13 +12,13 @@ directions, soft and hard skills, robotics, applications, databases, management 
 
 ## Functionalities: roles, permissions and actions
 
-The application should provide backend and frontend for a particular DSC group.
+The application should provide backend and frontend for a particular student club (DSC).
 
-Such DSC group would consist of members that would belong to either the `lead` group or to the `member`. The `lead` group
+Such DSC would consist of members that would belong to either `lead` group or to `member` group. The `lead` group
 inherits permissions from the `member` group.
 
 
-###### DSC members' permissions: <br>
+###### DSC members permissions: <br>
     Can view a list of hackathons (short description)
     Can view a hackathon (full description)
     Can suggest (create) a hackathon
@@ -45,7 +45,7 @@ inherits permissions from the `member` group.
     Login: lead@lead.com
     Password: leadmember1!
 ```
-- After successful login, a JWT token will be generated in the URL line as access_key=`aaa.bbb.zzz` and you'll be redirected
+- After successful login, a JWT token will be generated in the URL line as access_token=`aaa.bbb.zzz` and you'll be redirected
 to /hackathons. Don't worry if it says unauthorized! Frontend will come in future releases! Use test section below to try curl operations
 which will provide authorized and protected access with the right JWT tokens!
 
@@ -56,6 +56,8 @@ which will provide authorized and protected access with the right JWT tokens!
 
 - ##### Dependencies 
 Dependencies are stored in requirements.txt which should be installed by running 
+
+`pip install -r requirements`
 
 - ##### Prepare database
 Run to prepare necessary records:
