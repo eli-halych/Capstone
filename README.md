@@ -287,4 +287,4 @@ status_id: 3 | name: Rejected
 ##### NOTE: get the JWT token after successful login as a member of a lead. 
 ##### Include your JWT token in the authorization header. After the POST request the ID of a new hackathon you can also use will be returned.
 
-Run [`./this_collection.json`](.DSC-Hackathons.postman_collection.json) in Postman.
+Run [`./this_collection.json`](https://github.com/eli-halych/DSC-Hackathons/blob/master/DSC-Hackathons.postman_collection.json) in Postman.
