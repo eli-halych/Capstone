@@ -23,7 +23,11 @@ def create_app():
 
     @app.route('/')
     def login():
-        url = f"https://{AUTH0_DOMAIN}/authorize?audience={API_AUDIENCE}&response_type=token&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URL}"
+        url = f"https://{AUTH0_DOMAIN}/authorize?" \
+            f"audience={API_AUDIENCE}" \
+            f"&response_type=token" \
+            f"&client_id={CLIENT_ID}" \
+            f"&redirect_uri={REDIRECT_URL}"
         return redirect(url, code=200)
 
     return app

@@ -155,7 +155,8 @@ def verify_decode_jwt(token):
 
             # contents of the token is different than expected
             error['code'] = 'invalid_claims'
-            error['description'] = 'Incorrect claims. Please, check the audience and issuer.'
+            error['description'] = 'Incorrect claims. Please, check the ' \
+                                   'audience and issuer. '
             raise AuthError(error, 401)
 
         except Exception:
@@ -173,12 +174,11 @@ def verify_decode_jwt(token):
 
 def requires_auth(permission=''):
     """
-        uses the get_token_auth_header method to get the token
-        uses the verify_decode_jwt method to decode the jwt
-        uses the check_permissions method validate claims and check the requested permission
-        returns the decorator which passes the decoded payload to the decorated method
-        :param permission: string permission (i.e. 'post:drink')
-        :return: wrapper
+    uses the get_token_auth_header method to get the token uses the
+    verify_decode_jwt method to decode the jwt uses the check_permissions
+    method validate claims and check the requested permission returns the
+    decorator which passes the decoded payload to the decorated method
+    :param permission: string permission (i.e. 'post:drink') :return: wrapper
     """
     def requires_auth_decorator(f):
         @wraps(f)

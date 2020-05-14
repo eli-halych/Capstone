@@ -16,13 +16,15 @@ db = SQLAlchemy()
 
 class Hackathon(db.Model):
     """
-        Main event model connecting workshops, assets, can be approved or rejected by a Developer Students Club's lead
-        after being reviewed as an application made by a Developer Students' Club member.
+    Main event model connecting workshops, assets, can be approved or
+    rejected by a Developer Students Club's lead after being reviewed as an
+    application made by a Developer Students' Club member.
 
-        MANY Hackathon can host MANY Workshop -> associative table Hackathon_Workshop
-        MANY Hackathon can have MANY Category -> associative table Hackathon_Category
-        MANY Hackathon can have MANY Item -> associative table Hackathon_Item
-        ONE Hackathon can have ONE Status
+        MANY Hackathon can host MANY Workshop -> associative table
+        Hackathon_Workshop MANY Hackathon can have MANY Category ->
+        associative table Hackathon_Category MANY Hackathon can have MANY
+        Item -> associative table Hackathon_Item ONE Hackathon can have ONE
+        Status
     """
 
     __tablename__ = 'hackathon'
@@ -34,9 +36,15 @@ class Hackathon(db.Model):
     place_name = Column(String)
 
     # many to many
-    categories = relationship("Hackathon_Category", cascade="all,delete", backref="category")
-    workshops = relationship("Hackathon_Workshop", cascade="all,delete", backref="workshop")
-    items = relationship("Hackathon_Item", cascade="all,delete", backref="item")
+    categories = relationship("Hackathon_Category",
+                              cascade="all,delete",
+                              backref="category")
+    workshops = relationship("Hackathon_Workshop",
+                             cascade="all,delete",
+                             backref="workshop")
+    items = relationship("Hackathon_Item",
+                         cascade="all,delete",
+                         backref="item")
 
     # one to one
     status_id = Column(Integer, ForeignKey('status.id'))
@@ -101,7 +109,9 @@ class Workshop(db.Model):
     speaker_phone = Column(String)
 
     # many to many
-    hackathons = relationship("Hackathon_Workshop", cascade="all,delete", backref="hackathon")
+    hackathons = relationship("Hackathon_Workshop",
+                              cascade="all,delete",
+                              backref="hackathon")
 
     def serialize(self):
         return {
@@ -127,7 +137,9 @@ class Category(db.Model):
     description = Column(String)
 
     # many to many
-    hackathons = relationship("Hackathon_Category", cascade="all,delete", backref="hackathon")
+    hackathons = relationship("Hackathon_Category",
+                              cascade="all,delete",
+                              backref="hackathon")
 
     def serialize(self):
         return {
@@ -152,7 +164,9 @@ class Item(db.Model):
     description = Column(String)
 
     # many to many
-    hackathons = relationship("Hackathon_Item", cascade="all,delete", backref="hackathon")
+    hackathons = relationship("Hackathon_Item",
+                              cascade="all,delete",
+                              backref="hackathon")
 
     def serialize(self):
         return {
@@ -167,7 +181,8 @@ class Item(db.Model):
 
 class Status(db.Model):
     """
-        3 types of hackathon statuses: approved, rejected, pending (one to one relationship)
+    3 types of hackathon statuses: approved, rejected, pending (one to one
+    relationship)
     """
 
     __tablename__ = 'status'
@@ -198,7 +213,7 @@ class Status(db.Model):
 
 class Hackathon_Workshop(db.Model):
     """
-        Serves as a connection (assignation) between a workshop and a hackathon.
+    Serves as a connection (assignation) between a workshop and a hackathon.
     """
 
     __tablename__ = 'hackathon_workshop'
@@ -222,7 +237,7 @@ class Hackathon_Workshop(db.Model):
 
 class Hackathon_Category(db.Model):
     """
-        Serves as a connection (assignation) between a category and a hackathon.
+    Serves as a connection (assignation) between a category and a hackathon.
     """
 
     __tablename__ = 'hackathon_category'
@@ -273,9 +288,9 @@ class Hackathon_Item(db.Model):
 
 def setup_db(app, database_path=database_path):
     """
-    setup_db(app)
-        binds a flask application and a SQLAlchemy service
-        contains 2 options to create tables in the database, works depending on your system
+    setup_db(app) binds a flask application and a SQLAlchemy service
+    contains 2 options to create tables in the database, works depending on
+    your system
     """
 
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
