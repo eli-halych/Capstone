@@ -16,9 +16,9 @@ database_path = os.environ['DATABASE_URL']
 
 class DSCTestCase(unittest.TestCase):
     """
-        Contains 6 tests each one checking permissions for member/lead/public users.
-        Requires a fresh JWT token for both users.
-        # TODO switch to pytest
+    Contains 6 tests each one checking permissions for member/lead/public
+    users. Requires a fresh JWT token for both users.
+    # TODO switch to pytest
     """
 
     def setUp(self):
@@ -55,8 +55,12 @@ class DSCTestCase(unittest.TestCase):
             self.status_pending_id = status_pending.id
             self.status_approved_id = status_approved.id
 
-            self.lead_headers = {"Authorization": f"Bearer {get_lead_token()}"}
-            self.member_headers = {"Authorization": f"Bearer {get_member_token()}"}
+            self.lead_headers = {
+                "Authorization": f"Bearer {get_lead_token()}"
+            }
+            self.member_headers = {
+                "Authorization": f"Bearer {get_member_token()}"
+            }
 
     def tearDown(self):
         """Executed after reach test"""
@@ -369,7 +373,8 @@ class DSCTestCase(unittest.TestCase):
         hackathon.delete()
         self.assertEqual(status_code, 200)
         self.assertTrue(success)
-        self.assertEqual(data['hackathon']['status_id'], request_data['status_id'])
+        self.assertEqual(data['hackathon']['status_id'],
+                         request_data['status_id'])
         self.assertEqual(data['hackathon_id'], requested_id)
 
     def test_partially_update_hackathons_member(self):
@@ -479,7 +484,8 @@ class DSCTestCase(unittest.TestCase):
         self.assertEqual(status_code, 200)
         self.assertTrue(success)
         self.assertEqual(received_hackathon['name'], request_data['name'])
-        self.assertEqual(received_hackathon['place_name'], request_data['place_name'])
+        self.assertEqual(received_hackathon['place_name'],
+                         request_data['place_name'])
 
     def test_edit_hackathon_member(self):
         # member test

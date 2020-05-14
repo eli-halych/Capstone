@@ -7,6 +7,8 @@ from models import Hackathon, Item, Status, Category, Workshop
 hackathon_api = Blueprint('hackathon_api', __name__)
 
 
+# TODO narrow down exception cases
+
 @hackathon_api.route('/hackathons', methods=['GET'])
 @requires_auth('get:hackathons')
 def get_hackathons(payload):
@@ -15,8 +17,8 @@ def get_hackathons(payload):
             it is accessible for authorized DSC members
             it contains only the short data representation
 
-        :return: status code 200 and short descriptions of all hackathons as a list and success status
-        {'hackathons': [], 'success': True}
+        :return: status code 200 and short descriptions of all hackathons as
+        a list and success status {'hackathons': [], 'success': True}
     """
 
     response = {
@@ -26,10 +28,11 @@ def get_hackathons(payload):
 
     try:
         hackathons = Hackathon.query.all()
-        serialized_short = [hackathon.short_serialize() for hackathon in hackathons]
+        serialized_short = [hackathon.short_serialize() for hackathon in
+                            hackathons]
         response['hackathons'] = serialized_short
         response['success'] = True
-    except:
+    except Exception as e:
         abort(404)  # not found
 
     return jsonify(response)
@@ -43,8 +46,8 @@ def create_hackathon(payload):
             it is accessible for authorized DSC members
             it takes up to a full representation of a hackathon
 
-        :return: status code 200 and short descriptions of all hackathons as a list and success status
-        {'hackathons': [], 'success': True}
+        :return: status code 200 and short descriptions of all hackathons as
+        a list and success status {'hackathons': [], 'success': True}
     """
 
     data = {}
@@ -55,7 +58,7 @@ def create_hackathon(payload):
 
     try:
         data = json.loads(request.data)
-    except:
+    except Exception as e:
         abort(400)  # bad request
 
     try:
@@ -71,7 +74,7 @@ def create_hackathon(payload):
 
         response['success'] = True
         response['hackathon_id'] = hackathon.id
-    except:
+    except Exception as e:
         abort(422)  # unprocessable
 
     return jsonify(response)
@@ -85,9 +88,9 @@ def get_one_hackathon(payload, hackathon_id):
             it is accessible for authorized DSC members
             it contains a full representation of a hackathon
 
-        :return: status code 200 and full descriptions of a requested hackathon, success status and
-        requested hackathon id
-        {'hackathon': {...}, 'success': True, 'hackathon_id': 1}
+        :return: status code 200 and full descriptions of a requested
+        hackathon, success status and requested hackathon id {'hackathon': {
+        ...}, 'success': True, 'hackathon_id': 1}
     """
 
     response = {
@@ -101,7 +104,8 @@ def get_one_hackathon(payload, hackathon_id):
 
     try:
 
-        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+        hackathon = Hackathon.query.filter(
+            Hackathon.id == hackathon_id).first()
 
         if hackathon is None:
             abort(404)  # not found
@@ -109,7 +113,7 @@ def get_one_hackathon(payload, hackathon_id):
         response['success'] = True
         response['hackathon_id'] = hackathon.id
         response['hackathon'] = hackathon.full_serialize()
-    except:
+    except Exception as e:
         abort(422)  # unprocessable
 
     return jsonify(response)
@@ -136,7 +140,8 @@ def delete_hackathon(payload, hackathon_id):
 
     try:
 
-        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+        hackathon = Hackathon.query.filter(
+            Hackathon.id == hackathon_id).first()
 
         if hackathon is None:
             abort(404)  # not found
@@ -145,7 +150,7 @@ def delete_hackathon(payload, hackathon_id):
 
         response['success'] = True
         response['hackathon_id'] = hackathon.id
-    except:
+    except Exception as e:
         abort(422)  # unprocessable
 
     return jsonify(response)
@@ -158,8 +163,9 @@ def approve_hackathon(payload, hackathon_id):
         PATCH /hackathons/<hackathon_id>
             changes hackathon's status
 
-        :return: status code 200, success status and hackathon's ID,  the new status and updated hackathon
-        {'success': True, 'hackathon_id': 1, 'status': 'Approved, 'hackathon': {...}}
+        :return: status code 200, success status and hackathon's ID,
+        the new status and updated hackathon {'success': True,
+        'hackathon_id': 1, 'status': 'Approved, 'hackathon': {...}}
     """
 
     data = {}
@@ -175,12 +181,13 @@ def approve_hackathon(payload, hackathon_id):
 
     try:
         data = json.loads(request.data)
-    except:
+    except Exception as e:
         abort(400)  # bad request
 
     try:
         status = Status.query.filter(Status.id == data['status_id']).first()
-        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+        hackathon = Hackathon.query.filter(
+            Hackathon.id == hackathon_id).first()
 
         if hackathon is None:
             abort(404)  # not found
@@ -193,7 +200,7 @@ def approve_hackathon(payload, hackathon_id):
         response['hackathon_id'] = hackathon.id
         response['status'] = status.name
         response['hackathon'] = hackathon.full_serialize()
-    except:
+    except Exception as e:
         abort(422)  # unprocessable
 
     return jsonify(response)
@@ -203,12 +210,12 @@ def approve_hackathon(payload, hackathon_id):
 @requires_auth('put:hackathons')
 def edit_hackathon(payload, hackathon_id):
     """
-        PUT /hackathons/<hackathon_id>
-            updates all hackathon's details except those belonging to relationships
-            # TODO update relationships
+    PUT /hackathons/<hackathon_id> updates all hackathon's details except
+    those belonging to relationships # TODO update relationships
 
-        :return: status code 200, success status, hackathon's ID and the updated hackathon
-        {'success': True, 'hackathon_id': 1, 'hackathon': {...}}
+        :return: status code 200, success status, hackathon's ID and the
+        updated hackathon {'success': True, 'hackathon_id': 1, 'hackathon':
+        {...}}
     """
 
     data = {}
@@ -223,11 +230,12 @@ def edit_hackathon(payload, hackathon_id):
 
     try:
         data = json.loads(request.data)
-    except:
+    except Exception as e:
         abort(400)  # bad request
 
     try:
-        hackathon = Hackathon.query.filter(Hackathon.id == hackathon_id).first()
+        hackathon = Hackathon.query.filter(
+            Hackathon.id == hackathon_id).first()
 
         hackathon.name = data['name']
         hackathon.start_time = data['start_time']
@@ -244,7 +252,7 @@ def edit_hackathon(payload, hackathon_id):
         response['success'] = True
         response['hackathon_id'] = hackathon.id
         response['hackathon'] = hackathon.full_serialize()
-    except:
+    except Exception as e:
         abort(422)  # unprocessable
 
     return jsonify(response)
