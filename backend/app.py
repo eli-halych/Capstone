@@ -10,7 +10,7 @@ AUTH0_DOMAIN = config_vars['auth0_domain']
 ALGORITHMS = config_vars['algorithms']
 API_AUDIENCE = config_vars['api_audience']
 CLIENT_ID = config_vars['client_id']
-REDIRECT_URL = config_vars['redirect_url']
+# REDIRECT_URL = config_vars['redirect_url']
 
 
 def create_app():
@@ -21,14 +21,14 @@ def create_app():
 
     app.register_blueprint(hackathon_api)
 
-    @app.route('/')
-    def login():
-        url = f"https://{AUTH0_DOMAIN}/authorize?" \
-            f"audience={API_AUDIENCE}" \
-            f"&response_type=token" \
-            f"&client_id={CLIENT_ID}" \
-            f"&redirect_uri={REDIRECT_URL}"
-        return redirect(url, code=200)
+    # @app.route('/')
+    # def login():
+    #     url = f"https://{AUTH0_DOMAIN}/authorize?" \
+    #         f"audience={API_AUDIENCE}" \
+    #         f"&response_type=token" \
+    #         f"&client_id={CLIENT_ID}" \
+    #         f"&redirect_uri={REDIRECT_URL}"
+    #     return redirect(url, code=200)
 
     return app
 

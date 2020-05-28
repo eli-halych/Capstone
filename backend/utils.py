@@ -8,7 +8,7 @@ def get_auth0_variables():
         'algorithms': os.environ['ALGORITHMS'],
         'api_audience': os.environ['API_AUDIENCE'],
         'client_id': os.environ['CLIENT_ID'],
-        'redirect_url': os.environ['REDIRECT_URL']
+        # 'redirect_url': os.environ['REDIRECT_URL']
     }
     return config_vars
 
