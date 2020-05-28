@@ -8,7 +8,7 @@ const LogoutButton = styled.button`
     width: 165px;
     height:35px;
     border-radius: 4px;
-    background: #EC7063;
+    background: #e43f5a;
     color:white;
     border:0px transparent;
     text-align: center;
