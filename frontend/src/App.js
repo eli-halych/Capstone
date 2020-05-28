@@ -4,11 +4,10 @@ import Login from './login/Login';
 import Logout from "./login/Logout";
 import {isAuthenticated} from "./utils/Auth";
 
-
 function App() {
   return (
     <div className="App">
-        { isAuthenticated() ? <Logout/> : <Login/> }
+        { isAuthenticated()? <Logout/> : <Login/> }
     </div>
   );
 }

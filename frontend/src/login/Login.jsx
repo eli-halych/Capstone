@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import styled from 'styled-components';
-import { buildLoginLink } from '../utils/Auth';
+import lock from '../utils/Auth';
 
 const LoginButton = styled.button`
     margin:5px;
@@ -21,8 +21,7 @@ const LoginButton = styled.button`
 class Login extends Component{
 
     handleClick(){
-        window.location.href = buildLoginLink('hackathons');
-        return null;
+        lock.show();
     }
 
     render(){

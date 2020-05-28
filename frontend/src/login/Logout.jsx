@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import styled from 'styled-components';
-import { buildLogoutLink } from "../utils/Auth";
+import {buildLogoutLink} from "../utils/Auth";
+import {eraseCookie} from "../utils/Cookies";
 
 const LogoutButton = styled.button`
     margin:5px;
@@ -21,6 +22,7 @@ const LogoutButton = styled.button`
 class Logout extends Component{
 
     handleClick(){
+        eraseCookie('accessToken');
         window.location.href = buildLogoutLink();
         return null;
     }
