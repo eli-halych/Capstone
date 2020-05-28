@@ -1,13 +1,12 @@
 import React, {Component} from "react";
 import styled from 'styled-components';
-import { buildLoginLink } from '../utils/Auth';
 
-const LoginButton = styled.button`
+const LogoutButton = styled.button`
     margin:5px;
     width: 165px;
     height:35px;
     border-radius: 4px;
-    background: #58D68D;
+    background: #EC7063;
     color:white;
     border:0px transparent;
     text-align: center;
@@ -18,10 +17,11 @@ const LoginButton = styled.button`
     }
 `;
 
-class Login extends Component{
+class Logout extends Component{
 
     handleClick(){
-        window.location.href = buildLoginLink('hackathons');
+        // TODO logout link and redirect
+        // TODO Remove JWT from cookies? a.k.a real log out
         return null;
     }
 
@@ -29,9 +29,9 @@ class Login extends Component{
       return (
          <div className="login-button"
               onClick={this.handleClick}>
-              <LoginButton className="text">Login</LoginButton>
+              <LogoutButton className="text">Logout</LogoutButton>
          </div>);
     }
 }
 
-export default Login;
+export default Logout;
