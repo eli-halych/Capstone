@@ -70,7 +70,7 @@ class HackathonList extends Component {
                                     <CardOptionsNote>End time time: {hackathon.end_time}</CardOptionsNote>
                                 </CardFieldset>
 
-                                <CardButton type="button">Interested</CardButton>
+                                <CardButton type="button">Review</CardButton>
 
                             </CardBody>
                         </CardWrapper>
