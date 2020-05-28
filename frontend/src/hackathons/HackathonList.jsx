@@ -58,7 +58,7 @@ class HackathonList extends Component {
 
                 <div className="hackathon-list">
                     {hackathons.map(hackathon => (
-                        <CardWrapper>
+                        <CardWrapper key={hackathon.id}>
                             <CardHeader>
                                 <CardHeading>{hackathon.name}</CardHeading>
                             </CardHeader>
