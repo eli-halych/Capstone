@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import styled from 'styled-components';
+import { buildLogoutLink } from "../utils/Auth";
 
 const LogoutButton = styled.button`
     margin:5px;
@@ -20,8 +21,7 @@ const LogoutButton = styled.button`
 class Logout extends Component{
 
     handleClick(){
-        // TODO logout link and redirect
-        // TODO Remove JWT from cookies? a.k.a real log out
+        window.location.href = buildLogoutLink();
         return null;
     }
 

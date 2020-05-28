@@ -13,3 +13,13 @@ export function buildLoginLink(callbackInternalPath = '') {
     link += 'redirect_uri=' + CALLBACK_URL + callbackInternalPath;
     return link;
 }
+
+export function buildLogoutLink() {
+    let link = 'https://';
+    link += URL + '.auth0.com';
+    link += '/v2';
+    link += '/logout?';
+    link += 'returnTo=' + CALLBACK_URL + '&';
+    link += 'client_id=' + CLIENT_ID;
+    return link;
+}
